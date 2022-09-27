@@ -1,0 +1,272 @@
+
+
+
+
+
+
+
+public class CustomerLoginRepositoryImpl {}
+
+
+ CustomerLoginRepositoryImpl customerLoginRepositoryImpl = new CustomerLoginRepositoryImpl();
+
+// In the above line we are creating the reference of the class and object is also of the class CustomerLoginRepositoryImpl.
+
+
+
+public interface CustomerLoginRepository{}
+public class CustomerLoginRepositoryImpl implements CustomerLoginRepository{}
+
+// Interface always brings in loosely coupled code.
+Loosely coupled code is when we have classes like A and B. The class A is dependent on class B.
+So when we are making changes in the class B , in that case if the code is loosely coupled we dont
+have to make major changes in the code of A.
+
+public class ListOfNames {
+
+     private ArrayList<String> list=new ArrayList<>();
+
+     public void addNames(String name){
+         list.add(name);
+     }
+
+    public ArrayList<String> getList(){
+      return list;
+    }
+
+   }
+
+  public class Main {
+    public static void main(String args[]){
+      Scanner scan=new Scanner(System.in);
+      ListOfNames names=new ListOfNames();
+      String name=scan.next();
+      names.addNames(name);
+      ArrayList<String> list=names.getList();
+    
+
+   }
+ }
+
+// If  we decide that from ArrayList we have to make it as LinkedList, 
+it has to be changed in multiple places. 
+
+public class ListOfNames {
+
+     private LinkedList<String> list=new LinkedList<>();   ----> First change (2 changes)
+
+     public void addNames(String name){
+         list.add(name);
+     }
+
+    public ArrayList<String> getList(){   -----> Second change ( 1 Change)
+      return list;
+    }
+
+   }
+
+  public class Main {
+    public static void main(String args[]){
+      Scanner scan=new Scanner(System.in);
+      ListOfNames names=new ListOfNames();
+      String name=scan.next();
+      names.addNames(name);
+      ArrayList<String> list=names.getList();  -----> Third change ( 1 Change)
+    
+
+   }
+ }
+
+But in place of creating the reference of The class type , if we create the reference of interface type,
+we dont have to make much changes.
+
+import java.util.List;
+import java.util.ArrayList;
+public class ListOfNames {
+
+     private List<String> list=new ArrayList<String>();
+
+     public void addNames(String name){
+         list.add(name);
+     }
+
+    public List<String> getList(){
+      return list;
+    }
+
+   }
+
+  public class Main {
+    public static void main(String args[]){
+      Scanner scan=new Scanner(System.in);
+      ListOfNames names=new ListOfNames();
+      String name=scan.next();
+      names.addNames(name);
+      List<String> list=names.getList();
+    
+
+   }
+ }
+
+
+import java.util.List;
+import java.util.ArrayList;
+
+public class ListOfNames {
+
+     private List<String> list;
+
+    public ListNames(){   //Constructor to initialise
+    list=new ArrayList<String>();
+    }
+
+     public void addNames(String name){
+         list.add(name);
+     }
+
+    public List<String> getList(){
+      return list;
+    }
+
+   }
+
+  public class Main {
+    public static void main(String args[]){
+      Scanner scan=new Scanner(System.in);
+      ListOfNames names=new ListOfNames();
+      String name=scan.next();
+      names.addNames(name);
+      List<String> list=names.getList();
+    
+
+   }
+
+
+Now convert from ArrayList to LinkedList
+
+public class ListOfNames {
+
+     private List<String> list=new LinkedList<>(); ===> 1 Change
+
+     public void addNames(String name){
+         arrayList.add(name);
+     }
+
+    public List<String> getList(){
+      return list;
+    }
+
+   }
+
+  public class Main {
+    public static void main(String args[]){
+      Scanner scan=new Scanner(System.in);
+      ListOfNames names=new ListOfNames();
+      String name=scan.next();
+      names.addNames(name);
+      List<String> list=names.getList();
+    
+
+   }
+ }
+// This approach is better but still we have a flaw that we have to open the code and make a change in a single place.
+// That also we want to avoid and we want to make the code as fully loose coupled code.
+
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+public class ListOfNames {
+
+     private List<String> list;
+
+
+    public ListOfNames(List list)
+    {
+    this.list=list;
+    }
+
+    public void setList(List list){
+     this.list=list;
+    }
+
+     public void addNames(String name){
+         arrayList.add(name);
+     }
+
+    public List<String> getList(){
+      return list;
+    }
+
+   }
+
+  public class Main {
+    public static void main(String args[]){
+      List<String> list=new LinkedList<>();
+      Scanner scan=new Scanner(System.in);
+      ListOfNames names=new ListOfNames(list);
+      String name=scan.next();
+      names.addNames(name);
+      List<String> list=names.getList();
+    
+
+   }
+ }
+
+// This approach is much better as we dont have to make changes in the ListOfNames class.
+--------------------------------------------------------------------------------------------------------------------------
+What is a framework?
+It is providing us with the execution environment and provide us with the API Application Programming Interface(Classes and Interfaces) related to the relevant framework. 
+So the flow of execution of the code is controlled by the framework. 
+--------------------------------------------------------------------------------------------------------------------------
+Server====> A software which is accepting the user's request and providing the resourse which is asked by the user ( browser/client 
+application).
+
+Web Servers ====> Web Servers will be comparatively smaller in size in application server and require less hardware resource. 
+Apache Tomcat,Jetty 
+Application Servers====> It is much more bigger in size and provides solution for many enterprise requirements. 
+JBOSS,Weblogic,GlassFish
+---------------------------------------------------------------------------------------------------------------------------------
+In our kind of requirement with Spring, we can use the web server.
+
+ Instead, a technique called Dependency Injection (DI) is used. It is a technique in which the responsibility of creating, assembling and wiring the dependencies of a dependent class is externalized to the external framework or library called dependency injection (DI) frameworks. Now the control over the construction, wiring and assembly of an object no longer resides with the dependent classes themselves. This reversal of responsibilities is sometimes also known as Inversion of Control(IoC). Dependency injection framework are also called as IoC containers. 
+
+When a class A is dependent on the object of class B. Then the creation of object B will be done by following the dependency Injection. Which means object will be injected in the code when the object is required during the runtime and it will be done
+by a container ( runtime environment ) called IOC( Inversion of Control) container. Why it is called as Inversion because here
+we are making the Dependent class free from creating the object of the class on which it is dependent.
+-------------------------------------------
+
+public class A{
+
+   private B b; // We are not creating the object but we are just creating the reference variable and we all know the reference
+  variables are created during the compilation time of the code.
+
+   public A(B b){
+     this.b=b;
+   }
+ }
+
+
+
+  IOC container will look that the class A needs the object of class B, then it will create the object of class B and will provide
+the object during the runtime.If it is not so
+
+public class A{
+
+   private B b; 
+
+   public A(B b){
+     this.b=b;
+   }
+ }
+
+public class C{
+  public static void main(String args[]){
+ 
+    B b=new B();
+    A a=new A(b);  
+}
+}
+
+// Both the object are created by the coder while writing the code. 
+--------------------------------------------------------------------------------------------------------------------------
