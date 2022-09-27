@@ -269,4 +269,200 @@ public class C{
 }
 
 // Both the object are created by the coder while writing the code. 
---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------
+IOC containers
+
+BeanFactory interface: It represents container which provides basic functionalities. It instantiates bean whenever asked for by the client application. Using its getBean() method,  you can get instances of beans(objects which are instantiated and their life cycle is controlled by IOC container). It instantiates bean objects only when getBean() method is called.
+
+ApplicationContext interface: It extends BeanFactory interface and provides additional functionalities to support enterprise application development. It instantiates all beans when container is loaded. There are many implementations of this interface. Some commonly used implementation class.
+
+public interface BeanFactory{}
+public interface ApplicationContext extends BeanFactory {}  // One interface will extend another interface and not implement
+
+----------------------------------------------------------------------------------------------------------------------------------
+ClassPathXmlApplicationContext : It is used to process XML-based configuration metadata.
+
+AnnotationConfigApplicationContext : It is used to process Java‐based configuration metadata.
+------------------------------------------------------------------------------------------------------------------------------
+
+So as ApplicationContext and BeanFactory are interfaces we cannot create an object of these interfaces but we can 
+create a reference a variable of the interfaces and store the address/referencce of the object of the class which has implmented
+the interface.
+
+We have classes like ClassPathXmlApplicationContext(XML configuration we are not make use of this) and AnnotationConfigApplicationContext(annotation based and java based configuration which are implementing ApplicationContext
+interface.
+//ApplicationContext context=new AnnotationConfigAppicationContext();
+
+
+Qwhat is the parameter in the constructor of AnnotationConfigApplicationContext?
+A We have a class or we created a user defined class with the name SpringConfig. 
+
+Q Can we have any other name?
+A Yes as it is an user defined class.
+
+Q What this class contains?
+A This class contains the information about the beans/objects which will be created by the IOC container.
+
+
+public class HelloWorld{
+
+  public void greet(){
+   System.out.println("Hello World");
+  }
+}
+
+
+@Configuration  // Configuration is a pre defined annotation which is used to say that the class on which it is applied
+// is a configuration related class which is having the information about the beans/objects which will be created by the
+// IOC container
+public class SpringConfig {	
+	@Bean  // The method below will create an object/bean of HelloWorld class
+	public HelloWorld helloWorld() {  //Method should have return type same as of the class whose object we want to be created 
+                                          // by IOC container
+		return new HelloWorld();
+	}
+}
+
+public class Class{}===> class Class store the reference of the Class type. So example of class type. Welcome.class, Hello.class,Main.class
+
+public class Object{}
+Class classObject=Welcome.class;
+
+public class Tester{
+
+ public static void main(String args[]){
+    //STEP1==> We created an object of IOC container though IOC container ApplicationContext is an interface,
+    // We are creating an object of AnnotationConfigApplicationContext which is a class implementing the interface ApplicationContext
+    // The constructor of AnnotationConfigApplicationContext should have a parameter of type class ( In java we have a class With the name Class). 
+   ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
+// The above line we are saying that the IOC container should create objects and the information related to the class for the
+// object creation is provided within the class SpringConfig.
+
+Q How come the framework will know that SpringConfig is a configuration class?
+A With the annotation @Configuration.
+
+Q What next after the IOC container is intialised with the information of the configuration class?
+A: We need to get the Bean from the applicationcontext object which is an IOC container.
+
+   HelloWorld hello=ctx.getBean(HelloWorld.class);  // getBean is a method of ApplicationContext which will return an object of the 
+   // bean related class. 
+   OR
+   HelloWorld hello=ctx.getBean("helloWorld"); // Here the parameter is the method name which is creating an object of the bean class.
+   // The above code will give compilation error because return type is of Object type.
+    HelloWorld hello=(HelloWorld)ctx.getBean("helloWorld");
+   // We need to typecast if in the parameter we are passing the method name.
+
+   hello.greet();
+   }
+}
+======================================================================================================================== 
+Java Based creation of bean/object
+
+public class HelloWorld{
+
+  public void greet(){
+   System.out.println("Hello World");
+  }
+}
+
+@Configuration
+public class SpringConfig {	
+	@Bean
+	public HelloWorld helloWorld() {  
+		return new HelloWorld();
+	}
+}
+
+ public class Main{
+ {
+ public static void main(String args[]){
+  
+   ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
+   HelloWorld hello=ctx.getBean(HelloWorld.class);  
+   hello.greet();
+   }
+}
+
+----------------------------------------------------------------------------------------------------------
+
+Annotations are interfaces ... We have some predefined annotations. @Override is a predefined Annotation.
+We can even create our own annotation. Annnotation are called metadata. 
+
+What is metdata?
+It is data about data. 
+
+For whom we are using this annotations/who will interpret the annotations which we use with class or methods?
+The annotations are interpreted by the runtime environment or by the framework.
+---------------------------------------------------------------------------------------------------------------------------
+
+public @interface Configuration {}
+public interface Calculator{}
+----------------------------------------------------------------------------------------------------------------------------
+Let us see the demo.
+
+1) Let us create a maven project where artifact id will be springdemo1.
+File----->New------>Other------------>Maven project------>skip archetype(by checking the checkbox)
+groupid com.infosys
+artifactid springdemo1
+Click on finish.
+
+2) let use create some packages and classes.
+ 
+  package com.infosys.beans;
+    public class HelloWorld{
+
+  public void greet(){
+   System.out.println("Hello World");
+  }
+ }
+
+
+  package com.infosys.configuration;
+   @Configuration
+   public class SpringConfig {	
+	@Bean
+	public HelloWorld helloWorld() {  
+		return new HelloWorld();
+	}
+    }
+
+package com.infosys.userinterface;
+package com.infosys.userinterface;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.infosys.beans.HelloWorld;
+import com.infosys.configuration.SpringConfig;
+public class Main {
+	public static void main(String[] args) {
+	ApplicationContext context=new AnnotationConfigApplicationContext(SpringConfig.class);
+        HelloWorld hw=context.getBean(HelloWorld.class);
+        hw.greet();
+	}
+}
+
+
+  
+// All the annotations like @Configuration and @Bean and the interface like ApplicationContext and the class AnnotationConfigApplicationContext are within the API related to Spring. That we dont get with the Java Runtime.
+
+Q What is the solution?
+A We have to look for the dependencies and update the pom.xml so that it should go for downloading the jar files which is 
+are having the relavant annotations,interface and class.
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.infosys</groupId>
+  <artifactId>springdemo1</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+ <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>5.3.23</version>
+    </dependency>
+ </dependencies>
+</project>
+
+Q How I will get the dependency related info?
+A So we have a site which is related with maven repo informations.
+
