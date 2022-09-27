@@ -426,7 +426,7 @@ Click on finish.
 	}
     }
 
-package com.infosys.userinterface;
+
 package com.infosys.userinterface;
 
 import org.springframework.context.ApplicationContext;
@@ -465,4 +465,188 @@ are having the relavant annotations,interface and class.
 
 Q How I will get the dependency related info?
 A So we have a site which is related with maven repo informations.
+
+---------------------------------------------------------------------------------------------
+Let us practice:
+
+1) Let us create a maven project.
+2) Let us skip archetype.
+3) Let us update pom.xml for dependency. 
+
+<properties>
+      <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+</properties>
+
+<properties>
+    <java.version>17</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+</properties>
+
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.infosys</groupId>
+  <artifactId>springdemo2</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <java.version>11</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+</properties>
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.3.23</version>
+</dependency>
+ </dependencies>
+</project>
+
+
+
+
+package com.infosys.beans;
+
+public class Calculator {
+private int number1;
+private int number2;
+private int result;
+public int getNumber1() {
+	return number1;
+}
+public void setNumber1(int number1) {
+	this.number1 = number1;
+}
+public int getNumber2() {
+	return number2;
+}
+public void setNumber2(int number2) {
+	this.number2 = number2;
+}
+public int getResult() {
+	return result;
+}
+public void setResult(int result) {
+	this.result = result;
+}
+public int add() {
+	result=number1+number2;
+	return result;
+}
+
+}
+
+
+package com.infosys.configuration;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.infosys.beans.Calculator;
+
+@Configuration
+public class SpringConfig {
+     @Bean
+	 public Calculator calculator() {
+		 return new Calculator();
+	 }
+}
+
+package com.infosys.userinterface;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.infosys.beans.Calculator;
+import com.infosys.configuration.SpringConfig;
+
+public class Tester {
+
+	public static void main(String[] args) {
+	ApplicationContext applicationContext=new AnnotationConfigApplicationContext(SpringConfig.class);
+	Calculator calc=(Calculator)applicationContext.getBean("mycalculator");//The return type is Object type so we have to typecast
+	calc.setNumber1(1);
+	calc.setNumber2(10);
+	System.out.println(calc.add());
+
+	}
+
+}
+
+So the difference in the approach from core java coding:
+
+* In core java if we would have created the object of Calculator in main , we should have gone for writing
+  Calculator calc=new Calculator();
+  Than who is creating the object in the current related application?
+  IOC container is creating the object.
+  What is the name of the IOC container which we used in the program?
+  ApplicationContext
+  ApplicationContext is an interface so how we are getting an object of IOC container?
+  We created an object of AnnotationApplicationContext which implemented the interface ApplicationContext.
+  While creating the object of IOC container, what we are passing as a parameter to the constructor?
+  Class object of SpringConfig.
+  What SpringConfig class contains?
+  A method which is annotated with @Bean returns an object or bean.
+  What are the annotations which you have used in the Configuration class?
+  @Configuration at class level and @Bean at method level
+  What is the method of ApplicationContext which is returning a bean object?
+  getBean
+  What are the different parameters the getBean method can accept?
+  1) The class object of the bean class.
+  2) method name of the method annoted with @Bean.
+  3) bean name mentioned as @Bean(name="beanname")
+----------------------------------------------------------------------------------------------------------------------
+ Final variables we should write in uppercase.
+ 
+public static final Log LOGGER = LogFactory.getLog(UserInterface.class); 
+
+// Create an object of Log with the help of LogFactory getLog method. The getLog method should be intialised with the object of class
+for which you want to log the message.
+LOGGER.info(welcomeBean.printWelcome());
+---------------------------------------------------------------------------------------------------------------
+ Java annotation-based configuration:-
+
+Let us see the changes:- With the bean class we are going to make use of the class level annotation called @Component.
+   
+ package com.infosys.beans;
+    @Component
+    public class HelloWorld{
+
+  public void greet(){
+   System.out.println("Hello World");
+  }
+ }
+
+ package com.infosys.configuration;
+   @Configuration
+   @ComponentScan(basePackages="com.infosys.beans")  // This annotation is used to inform the IOC container that the class which is
+       // annoted with @Component is available within the backage com.infosys.beans
+   public class SpringConfig {	}
+
+
+package com.infosys.userinterface;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.infosys.beans.HelloWorld;
+import com.infosys.configuration.SpringConfig;
+public class Main {
+	public static void main(String[] args) {
+	ApplicationContext context=new AnnotationConfigApplicationContext(SpringConfig.class);
+        HelloWorld hw=(HelloWorld)context.getBean("helloWorld");  // With the class which is annotated with @Component, make the
+       // first character in smallcase and use with the getBean
+        hw.greet();
+	}
+}
+
+The changes:-
+1) We annotated the Bean class with the Annotation @Component.
+2) Within the configuration class, we used another annotation called @ComponentScan where we mentioned the package name of the class
+which is annotated with @Component.
+3) Within the SpringConfig class we dont have to go for any @Bean declaration.
+----------------------------------------------------------------------------------------------------------------------------------
 
