@@ -649,4 +649,70 @@ The changes:-
 which is annotated with @Component.
 3) Within the SpringConfig class we dont have to go for any @Bean declaration.
 ----------------------------------------------------------------------------------------------------------------------------------
+Properties file with Spring Application:
 
+1) Create a properties file in the resource folder.
+messages.properties
+message=Hello Friends!!!!
+data=10
+str=welcome
+
+2) Creating a configuration class.
+package com.infosys.configuration;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
+@Configuration
+@PropertySource("classpath:messages.properties")
+public class SpringConfig {
+
+}
+
+
+
+2)
+package com.infosys.userinterface;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.Environment;
+
+import com.infosys.configuration.SpringConfig;
+
+public class Tester {
+
+	public static void main(String[] args) {
+
+
+        ApplicationContext context=new AnnotationConfigApplicationContext(SpringConfig.class);
+        Environment env=context.getEnvironment();
+        System.out.println(env.getProperty("message"));
+        System.out.println(env.getProperty("data"));
+        System.out.println(env.getProperty("str"));
+	}
+
+}
+
+* creating the properties file
+* using @PropertySource annotation in the class which is annotated with @Configuration
+* Getting an object of Environment through the container application context.
+* Using the getProperty of Environment to read the property/key from the properties file which is under resource folder.
+
+---------------------------------------------------------------------------------------------------------------------
+Stereotype annotations
+
+            @Component ( Generic annotation) 
+   
+@Service      @Controller      @Repository ====> 
+----------------------------------------------------------------------------------------------------------------------------------
+Some of the best practices that should be followed in Java-Annotation based configuration are:
+
+Use specialized stereotypes and NOT generic stereotype
+As you have seen previously, @Component is a 'generic' stereotype for any Spring-managed bean or component. We also derive @Service, @Repository and @Controller from @Component, which are 'specialized' stereotypes used for classes implementing Service, Persistence and Controller layers respectively.
+
+@Component can be used interchangeably with any of the above derived specific stereotypes and there will not be any significant issue or complication to the application. However, it is a best practice to use the specific stereotypes for their respective layer implementations (which is @Service for Service Layer, @Repository for Persistence Layer and @Controller for Controller Layer).
+
+Annotate ONLY classes and NOT interfaces
+We should always annotate only the classes (and/or it's methods) and not the interface which it implements as Java does not allow the implementing classes to inherit the interfaces which are annotated. Hence, it is a good practice to avoid annotating the interfaces.
+--------------------------------------------------------------------------------------------------------------------------
